@@ -1,0 +1,84 @@
+// This program file loads and graphs the NASA data
+dir = "data/globaltemps/data/";
+datafile_temps = "globaltempindex.xlsx";
+datafile_sealevel = "globalsealevel.xlsx";
+datafile_co2 = "co2.xlsx";
+datafile_icesheets = "icesheets.xlsx";
+datafile_arctic = "articseaice.xlsx";
+
+// Load data
+icesheets = loadd(dir $+ datafile_icesheets, "time+mass");
+
+//Plot global temperature data
+startdt = 200201;
+freq = 12;
+
+//Time series plot
+//Set up graph look
+struct plotControl tsPlot;
+tsPlot = projPlotDefaults();
+
+// Set ticks
+plotSetXTicInterval(&tsPlot, 3*12, 2003);
+
+// Set title
+plotSetTitle(&tsPlot, "Antartica Mass Variation Since 2002");
+
+// Set axis
+plotSetXAxisLabel(&tsPlot, "Years");
+plotSetYAxisLabel(&tsPlot, "Antartica Mass (Gt)");
+
+// Display only 4 digit year on 'X' tick labels
+plotSetXTicLabel(&tsPlot, "YYYY");
+
+// Time series plot of smoothed data
+plotTS(tsPlot, startdt, freq, icesheets[., 2]);
+
+/*****************************************************************************/
+
+
+proc (1) = projPlotDefaults();
+    local title_font_size, font_name, axis_label_size;
+    // Set up graph
+    struct plotControl myPlot;
+    myPlot = plotGetDefaults("xy");
+    
+    // Set up font
+    title_font_size = 18;
+    font_name = "helvetica neue";
+    axis_label_size = 14;
+    
+    
+    // Title
+    plotSetTitle(&myPlot, "", font_name, title_font_size);
+    
+    plotSetYLabel(&myPlot, "", font_name, axis_label_size);
+    
+    // Set legend background to be completely transparent
+    plotSetLegendBkd(&myPlot, 0);
+    
+    plotSetTicLabelFont(&myPlot, font_name, 12);
+    plotSetLegendFont(&myPlot, font_name, 12);
+    
+    retp(myPlot);
+endp;
+
+
+proc (1) = grayTextSettings();
+    local font_size, font_name;
+    struct plotAnnotation mytextbox;
+
+    // Set up font
+    font_size = 12;
+    font_name = "helvetica neue";
+    
+    mytextbox = annotationGetDefaults();
+    annotationSetBkd(&mytextbox, "#DDDDDD", 0.1);
+    annotationSetFont(&mytextbox, font_name, font_size, "#55555");
+    
+    annotationSetLineThickness(&mytextbox, 0);
+    //annotationSetLineColor(&mytextbox, "#555555");
+    
+    retp(mytextbox);
+endp;
+

@@ -1,0 +1,27 @@
+
+
+proc (1) = projPlotDefaults();
+    local title_font_size, font_name, axis_label_size;
+    // Set up graph
+    struct plotControl myPlot;
+    myPlot = plotGetDefaults("xy");
+    
+    // Set up font
+    title_font_size = 18;
+    font_name = "helvetica neue";
+    axis_label_size = 14;
+    
+    
+    // Title
+    plotSetTitle(&myPlot, "", font_name, title_font_size);
+    
+    plotSetYLabel(&myPlot, "", font_name, axis_label_size);
+    
+    // Set legend background to be completely transparent
+    plotSetLegendBkd(&myPlot, 0);
+    
+    plotSetTicLabelFont(&myPlot, font_name, 12);
+    plotSetLegendFont(&myPlot, font_name, 12);
+    
+    retp(myPlot);
+endp;

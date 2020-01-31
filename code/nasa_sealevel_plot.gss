@@ -1,0 +1,99 @@
+
+// This program file loads and graphs the NASA data
+dir = "data/globaltemps/data/";
+datafile_temps = "globaltempindex.xlsx";
+datafile_sealevel = "globalsealevel.xlsx";
+datafile_co2 = "co2.xlsx";
+datafile_icesheets = "icesheets.xlsx";
+datafile_arctic = "articseaice.xlsx";
+
+// Load data
+sealevel = loadd(dir $+ datafile_sealevel, "date+gmsl_adj_smoothed");
+
+//Time series plot
+//Set up graph look
+struct plotControl tsPlot;
+tsPlot = projPlotDefaults("area");
+
+// Set title
+plotSetTitle(&tsPlot, "Sea Level Changes Since 1993");
+
+// Set axis
+plotSetXAxisLabel(&tsPlot, "Date");
+plotSetYAxisLabel(&tsPlot, "Sea Height Variation (mm)");
+
+// Set Legend
+plotSetLegend(&tsPlot, "Smoothed and Adjusted Data");
+
+// Set X-axis
+plotSetXRange(&tsPlot, 1993, 2020);
+
+// Set fill color
+plotSetFill(&tsPlot, 1, 0.3, tsplot.fillColor[2 1 3:5]);
+
+// Set X-tic
+plotSetXTicInterval(&tsPlot, 5, 1995);
+
+// Time series plot of smoothed data
+// Add in SD
+// Create variations
+diff = sealevel[., 2]-sealevel[1, 2];
+upper_bound = diff + 4;
+lower_bound = diff - 4;
+
+y_bottom = diff~lower_bound;
+y_top = upper_bound~diff;
+
+plotXYFill(tsPlot, sealevel[. , 1], lower_bound, upper_bound);
+
+//plotSetLineColor(&tsPlot, tsPlot.fillColor[
+plotAddXY(sealevel[. , 1], diff);
+
+
+/*****************************************************************************/
+
+
+proc (1) = projPlotDefaults(gr_type);
+    local title_font_size, font_name, axis_label_size;
+    // Set up graph
+    struct plotControl myPlot;
+    myPlot = plotGetDefaults(gr_type);
+    
+    // Set up font
+    title_font_size = 18;
+    font_name = "helvetica neue";
+    axis_label_size = 14;
+    
+    
+    // Title
+    plotSetTitle(&myPlot, "", font_name, title_font_size);
+    
+    plotSetYLabel(&myPlot, "", font_name, axis_label_size);
+    
+    // Set legend background to be completely transparent
+    plotSetLegendBkd(&myPlot, 0);
+    
+    plotSetTicLabelFont(&myPlot, font_name, 12);
+    plotSetLegendFont(&myPlot, font_name, 12);
+    
+    retp(myPlot);
+endp;
+
+
+proc (1) = grayTextSettings();
+    local font_size, font_name;
+    struct plotAnnotation mytextbox;
+
+    // Set up font
+    font_size = 10;
+    font_name = "helvetica neue";
+    
+    mytextbox = annotationGetDefaults();
+    annotationSetBkd(&mytextbox, "#DDDDDD", 0.1);
+    annotationSetFont(&mytextbox, font_name, font_size, "#55555");
+    
+    annotationSetLineThickness(&mytextbox, 0);
+    //annotationSetLineColor(&mytextbox, "#555555");
+    
+    retp(mytextbox);
+endp;
