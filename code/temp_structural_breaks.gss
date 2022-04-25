@@ -1,0 +1,44 @@
+library tsmt;
+
+// This program file loads and graphs the NASA data
+dir = "data/globaltemps/data/";
+datafile_temps = "globaltempindex.xlsx";
+
+
+// Load data
+temp = loadd(dir $+ datafile_temps);
+y = temp[., 3];
+
+//Plot global temperature data
+startdt = 1880;
+freq = 1;
+
+//Specify regressors
+//Time varying coefficients in z
+z = ones(rows(y), 1);
+
+//No time invariant regressors
+x = 0;
+
+//Declare sbControl structure
+struct sbControl sbc0;
+
+//Initialize instance of structure
+sbc0 = sbControlCreate();
+
+//Set individual model parameters
+sbc0.q = 1;
+sbc0.m = 5;
+sbc0.trim = 0.15;
+sbc0.h = 0;
+sbc0.printOutput = 1;
+sbc0.initialBeta = 0.5;
+sbc0.maxIters = 40;
+
+//Turn on graphing capability
+sbc0.graphOn = 1;
+sbc0.dtstart = dtdate(1979, 01, 01, 0, 00, 00);
+sbc0.frequency = 12;
+
+struct sbOut sbc0ut;
+sbc0ut = sbreak(y, z, x, sbc0);
